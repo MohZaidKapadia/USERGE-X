@@ -73,8 +73,8 @@ async def crop_vid(input_vid: str, final_path: str):
         return
     correct_aspect = True
     vid_valid = False
-    if out and len(out.get("track")) != 0:
-        continue
+    if not (out and len(out.get("track")) != 0):
+        return
     for stream in out.get("track"):
         if stream["@type"] == "Video":
             vid_valid = True
