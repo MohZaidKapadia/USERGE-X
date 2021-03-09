@@ -89,7 +89,7 @@ if userge.has_bot:
     async def send_bot_media(
         message: Message, text: str, markup: InlineKeyboardMarkup
     ) -> None:
-        if Config.BOT_MEDIA.strip().lower() == "false":
+        if Config.BOT_MEDIA and Config.BOT_MEDIA.strip().lower() == "false":
             await message.reply(
                 text, disable_web_page_preview=True, reply_markup=markup
             )
