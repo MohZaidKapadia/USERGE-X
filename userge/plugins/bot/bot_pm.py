@@ -9,7 +9,7 @@ from re import compile as comp_regex
 from typing import Union
 
 from pyrogram import filters
-from pyrogram.errors import BadRequest
+from pyrogram.errors import BadRequest, FloodWait
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -43,7 +43,8 @@ if userge.has_bot:
         global _BOT_PM_MEDIA
         if not Config.BOT_MEDIA:
             _BOT_PM_MEDIA = get_file_id(await userge.bot.get_messages("useless_x", 2))
-        elif Config.BOT_MEDIA.strip().lower() != "false":
+            return
+        if Config.BOT_MEDIA.strip().lower() != "false":
             match = TG_LINK_REGEX.search(Config.BOT_MEDIA)
             if match:
                 from_chat = str(match.group(1))
