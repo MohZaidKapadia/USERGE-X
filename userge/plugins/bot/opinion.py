@@ -12,7 +12,6 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 
 from userge import Config, Message, userge
 
-
 PATH = "userge/xcache/emoji_data.txt"
 CHANNEL = userge.getCLogger(__name__)
 

@@ -159,6 +159,7 @@ def check_owner(func):
                 "Only My Master can Access This !!\n\n     𝘿𝙚𝙥𝙡𝙤𝙮 𝙮𝙤𝙪𝙧 𝙤𝙬𝙣 𝙐𝙎𝙀𝙍𝙂𝙀-𝙓",
                 show_alert=True,
             )
+
     return wrapper
 
 
@@ -166,5 +167,6 @@ def check_owner(func):
 class AttributeDict(dict):
     def __getattr__(self, attr):
         return self[attr]
+
     def __setattr__(self, attr, value):
         self[attr] = value

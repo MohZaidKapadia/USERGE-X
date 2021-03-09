@@ -5,20 +5,20 @@
 
 import asyncio
 from datetime import date, datetime, timedelta
-from typing import Union, List
-from pyrogram import filters
-from pyrogram.errors import (
-    BadRequest,
-    ChannelInvalid,
-    FileIdInvalid,
-    FileReferenceEmpty,
-    MediaEmpty,
-)
-from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, User
-
-from userge import Config, Message, get_collection, logging, userge
-from userge.utils import get_file_id, AttributeDict, check_owner
 from re import compile as comp_regex
+from typing import Union
+
+from pyrogram import filters
+from pyrogram.errors import BadRequest
+from pyrogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    User,
+)
+
+from userge import Config, Message, get_collection, userge
+from userge.utils import check_owner, get_file_id
 
 # Loggers
 CHANNEL = userge.getCLogger(__name__)
@@ -50,7 +50,9 @@ if userge.has_bot:
                     from_chat = int("-100" + from_chat)
                 from_chat_msg = match.group(2)
                 try:
-                    bot_m_fid = get_file_id(await userge.bot.get_messages(from_chat, from_chat_msg))
+                    bot_m_fid = get_file_id(
+                        await userge.bot.get_messages(from_chat, from_chat_msg)
+                    )
                 except Exception as b_m_err:
                     LOGGER.error(b_m_err)
                 else:
@@ -63,33 +65,37 @@ if userge.has_bot:
         if not (_CACHED_INFO and _CACHED_INFO["time"] > datetime.timestamp(t_now)):
             _CACHED_INFO["owner"]
             try:
-                owner_info = await userge.bot.get_user_dict(Config.OWNER_ID[0], attr_dict=True)
+                owner_info = await userge.bot.get_user_dict(
+                    Config.OWNER_ID[0], attr_dict=True
+                )
             except (BadRequest, IndexError):
                 _CACHED_INFO["owner"] = Config.OWNER_ID[0]
                 LOGGER.debug(
                     "Coudn't get Info about User in OWNER_ID !\n"
                     "Try /start in bot or check OWNER_ID var"
-                )            
+                )
             else:
                 _CACHED_INFO["owner"] = owner_info
-                _CACHED_INFO["bot"] = await userge.bot.get_user_dict("me", attr_dict=True)
-                _CACHED_INFO["time"] = int(datetime.timestamp(t_now + timedelta(days=1)))
+                _CACHED_INFO["bot"] = await userge.bot.get_user_dict(
+                    "me", attr_dict=True
+                )
+                _CACHED_INFO["time"] = int(
+                    datetime.timestamp(t_now + timedelta(days=1))
+                )
         return _CACHED_INFO
 
-    async def send_bot_media(message: Message, text: str, markup: InlineKeyboardMarkup) -> None:
+    async def send_bot_media(
+        message: Message, text: str, markup: InlineKeyboardMarkup
+    ) -> None:
         if Config.BOT_MEDIA.strip().lower() == "false":
             await message.reply(
-                text,
-                disable_web_page_preview=True,
-                reply_markup=markup
+                text, disable_web_page_preview=True, reply_markup=markup
             )
         else:
             if not _BOT_PM_MEDIA:
                 await get_bot_pm_media()
             await message.reply_cached_media(
-                file_id=_BOT_PM_MEDIA,
-                caption=text,
-                reply_markup=markup
+                file_id=_BOT_PM_MEDIA, caption=text, reply_markup=markup
             )
 
     async def check_new_bot_user(user: Union[int, str, User]) -> bool:
@@ -105,7 +111,7 @@ if userge.has_bot:
                 BOT_START.insert_one(
                     {"firstname": user_.flname, "user_id": user_.id, "date": start_date}
                 ),
-                CHANNEL.log(log_msg)
+                CHANNEL.log(log_msg),
             )
         return bool(found)
 
@@ -127,24 +133,24 @@ if userge.has_bot:
     <i>You can contact my <b>Master</b> and checkout the <b>Repo</b> For more info.</i>
     """
         if Config.BOT_FORWARDS:
-            start_msg += ("\n<b>NOTE: "
-            "Bot Forwarding is</b> :  ☑️ `Enabled`\n"
-            "All your messages here will be forwarded to my <b>MASTER</b>")
-        contact_url = f"https://t.me/{c_info.owner.uname}" if c_info.owner.uname else f"tg://user?id={c_info.owner.id}"
+            start_msg += (
+                "\n<b>NOTE: "
+                "Bot Forwarding is</b> :  ☑️ `Enabled`\n"
+                "All your messages here will be forwarded to my <b>MASTER</b>"
+            )
+        contact_url = (
+            f"https://t.me/{c_info.owner.uname}"
+            if c_info.owner.uname
+            else f"tg://user?id={c_info.owner.id}"
+        )
         btns = [
-                [
-                    InlineKeyboardButton("👋  CONTACT", url=contact_url),
-                    InlineKeyboardButton(
-                        "⚡️  REPO", url=Config.UPSTREAM_REPO
-                    ),
-                ],
+            [
+                InlineKeyboardButton("👋  CONTACT", url=contact_url),
+                InlineKeyboardButton("⚡️  REPO", url=Config.UPSTREAM_REPO),
+            ],
         ]
         if from_user.id in Config.OWNER_ID:
-            btns += [
-                        InlineKeyboardButton(
-                            "➕ ADD TO GROUP", callback_data="add_to_grp"
-                        )
-                ]
+            btns += [InlineKeyboardButton("➕ ADD TO GROUP", callback_data="add_to_grp")]
         try:
             await send_bot_media(message, start_msg, InlineKeyboardMarkup(btns))
         except FloodWait as e:
@@ -161,10 +167,10 @@ if userge.has_bot:
         await c_q.answer()
         msg = "<b>🤖 Add Your Bot to Group</b> \n\n <u>Note:</u>  <i>Admin Privilege Required !</i>"
         add_bot = f"http://t.me/{(await get_bot_info()).bot.uname}?startgroup=start"
-        buttons = InlineKeyboardMarkup([[InlineKeyboardButton("➕ PRESS TO ADD", url=add_bot)]])
-        await c_q.edit_message_text(
-            msg, reply_markup=buttons
+        buttons = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("➕ PRESS TO ADD", url=add_bot)]]
         )
+        await c_q.edit_message_text(msg, reply_markup=buttons)
 
 
 @userge.on_cmd(
@@ -179,8 +185,10 @@ async def bot_users_(message: Message):
     """Users Who Stated Your Bot by - /start"""
     msg = ""
     async for c in BOT_START.find():
-        msg += (f"• <i>ID:</i> <code>{c['user_id']}</code>\n   "
-        f"<b>Name:</b> {c['firstname']},  <b>Date:</b> `{c['date']}`\n")
+        msg += (
+            f"• <i>ID:</i> <code>{c['user_id']}</code>\n   "
+            f"<b>Name:</b> {c['firstname']},  <b>Date:</b> `{c['date']}`\n"
+        )
     await message.edit_or_send_as_file(
         f"<u><i><b>Bot PM Userlist</b></i></u>\n\n{msg}"
         if msg
