@@ -19,15 +19,15 @@ from .bot_pm import check_new_bot_user
 CHANNEL = userge.getCLogger(__name__)
 PATH = "./userge/xcache/spoiler_db.json"
 BOT_BAN = get_collection("BOT_BAN")
-BOT_START = get_collection("BOT_START")
 
 
 class Spoiler_DB:
     def __init__(self):
         if not os.path.exists(PATH):
-            d = {}
-            ujson.dump(d, open(PATH, "w"))
-        self.db = ujson.load(open(PATH))
+            with open(PATH, "w") as f:
+                ujson.dump({}, f)
+        with open(PATH) as load_db:
+            self.db = ujson.load(load_db)
 
     def stats_(self, rnd_id: str, user_id: int, user_name: str):
         if user_id not in Config.OWNER_ID and user_id not in self.db[rnd_id]["stats"]:
