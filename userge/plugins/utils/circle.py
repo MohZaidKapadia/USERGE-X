@@ -92,7 +92,7 @@ async def crop_vid(input_vid: str, final_path: str):
             break
     if vid_valid:
         if correct_aspect:
-            crop_by = min(width_, height)
+            crop_by = min(width_, height_)
             await runcmd(
                 f"""ffmpeg -i \'{input_vid}\' -vf \"crop={crop_by}:{crop_by}\" {final_path}"""
             )

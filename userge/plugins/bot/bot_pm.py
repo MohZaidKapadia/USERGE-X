@@ -168,10 +168,10 @@ My Master is: {owner_.flname}</b>
             await send_bot_media(message, start_msg, InlineKeyboardMarkup(btns))
         except FloodWait as e:
             await asyncio.sleep(e.x + 10)
-        except Exception as bpm_e:
-            await CHANNEL.log(
-                f"**ERROR**: {str(bpm_e)}\n\nFatal Error occured while sending Bot Pm Media"
-            )
+        # except Exception as bpm_e:
+        #     await CHANNEL.log(
+        #         f"**ERROR**: {str(bpm_e)}\n\nFatal Error occured while sending Bot Pm Media"
+        #     )
         await check_new_bot_user(message.from_user)
 
     @check_owner
