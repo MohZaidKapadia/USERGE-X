@@ -114,12 +114,15 @@ if userge.has_bot:
                 )
                 await asyncio.gather(
                     BOT_START.insert_one(
-                        {"firstname": user_.flname, "user_id": user_.id, "date": start_date}
+                        {
+                            "firstname": user_.flname,
+                            "user_id": user_.id,
+                            "date": start_date,
+                        }
                     ),
                     CHANNEL.log(log_msg),
                 )
         return not bool(found)
-        
 
     @userge.bot.on_message(filters.private & filters.regex(pattern=r"^/start$"))
     async def start_bot(_, message: Message):
@@ -158,7 +161,9 @@ My Master is: {owner_.flname}</b>
             ]
         ]
         if from_user.id in Config.OWNER_ID:
-            btns.append(InlineKeyboardButton("➕ ADD TO GROUP", callback_data="add_to_grp"))
+            btns.append(
+                InlineKeyboardButton("➕ ADD TO GROUP", callback_data="add_to_grp")
+            )
         try:
             await send_bot_media(message, start_msg, InlineKeyboardMarkup(btns))
         except FloodWait as e:
