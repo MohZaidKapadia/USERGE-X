@@ -48,7 +48,7 @@ async def alive_inline(message: Message):
         if message.client.is_bot:
             await send_alive_message(message)
         elif userge.has_bot:
-            await inline_alive(message)
+            await send_inline_alive(message)
         else:
             await send_alive_message(message)
     except Exception as e_all:
@@ -91,8 +91,8 @@ async def send_alive_message(message: Message) -> None:
         file_id = _USER_CACHED_MEDIA
         caption += (
             f"\n⚡️  <a href={Config.UPSTEAM_REPO}><b>REPO</b></a>"
-            + "    <code>|</code>    "
-            + "👥  <a href='https://t.me/useless_x'><b>SUPPORT</b></a>"
+            "    <code>|</code>    "
+            "👥  <a href='https://t.me/useless_x'><b>SUPPORT</b></a>"
         )
     if not Config.ALIVE_MEDIA:
         await client.send_photo(

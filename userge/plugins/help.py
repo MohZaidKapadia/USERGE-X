@@ -91,9 +91,7 @@ async def _init() -> None:
 @userge.on_cmd(
     "help", about={"header": "Guide to use USERGE commands"}, allow_channels=False
 )
-async def helpme(
-    message: Message,
-) -> None:  # pylint: disable=missing-function-docstring
+async def helpme(message: Message) -> None:
     plugins = userge.manager.enabled_plugins
     if not message.input_str:
         out_str = (
