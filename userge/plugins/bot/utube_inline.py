@@ -5,9 +5,9 @@
 
 import glob
 import os
-from re import compile as comp_regex
 from collections import defaultdict
 from pathlib import Path
+from re import compile as comp_regex
 from time import time
 
 import ujson
@@ -42,7 +42,7 @@ LOGGER = userge.getLogger(__name__)
 CHANNEL = userge.getCLogger(__name__)
 BASE_YT_URL = "https://www.youtube.com/watch?v="
 YOUTUBE_REGEX = comp_regex(
-   r"(?:youtube\.com|youtu\.be)/(?:[\w-]+\?v=|embed/|v/)?([\w-]{11})"
+    r"(?:youtube\.com|youtu\.be)/(?:[\w-]+\?v=|embed/|v/)?([\w-]{11})"
 )
 PATH = "./userge/xcache/ytsearch.json"
 
