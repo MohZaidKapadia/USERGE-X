@@ -163,7 +163,7 @@ if userge.has_bot:
             await CHANNEL.log(
                 f"**ERROR**: {str(bpm_e)}\n\nFatal Error occured while sending Bot Pm Media"
             )
-        await check_bot_user(from_user)
+        await check_new_bot_user(from_user)
 
     @check_owner
     @userge.bot.on_callback_query(filters.regex(pattern=r"^add_to_grp$"))
