@@ -162,16 +162,16 @@ My Master is: {owner_.flname}</b>
         ]
         if from_user.id in Config.OWNER_ID:
             btns.append(
-                InlineKeyboardButton("➕ ADD TO GROUP", callback_data="add_to_grp")
+                [InlineKeyboardButton("➕ ADD TO GROUP", callback_data="add_to_grp")]
             )
         try:
             await send_bot_media(message, start_msg, InlineKeyboardMarkup(btns))
         except FloodWait as e:
             await asyncio.sleep(e.x + 10)
-        # except Exception as bpm_e:
-        #     await CHANNEL.log(
-        #         f"**ERROR**: {str(bpm_e)}\n\nFatal Error occured while sending Bot Pm Media"
-        #     )
+        except Exception as bpm_e:
+            await CHANNEL.log(
+                f"**ERROR**: {str(bpm_e)}\n\nFatal Error occured while sending Bot Pm Media"
+            )
         await check_new_bot_user(message.from_user)
 
     @check_owner
