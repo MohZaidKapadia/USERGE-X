@@ -37,6 +37,7 @@ if userge.has_bot:
 
     async def _init() -> None:
         await get_bot_pm_media()
+        await get_bot_info()
 
     async def get_bot_pm_media() -> None:
         global _BOT_PM_MEDIA
@@ -63,7 +64,6 @@ if userge.has_bot:
         global _CACHED_INFO
         t_now = datetime.now()
         if not (_CACHED_INFO and _CACHED_INFO["time"] > datetime.timestamp(t_now)):
-            _CACHED_INFO["owner"]
             try:
                 owner_info = await userge.bot.get_user_dict(
                     Config.OWNER_ID[0], attr_dict=True
@@ -76,6 +76,7 @@ if userge.has_bot:
                 )
             else:
                 _CACHED_INFO["owner"] = owner_info
+            finally:
                 _CACHED_INFO["bot"] = await userge.bot.get_user_dict(
                     "me", attr_dict=True
                 )
