@@ -102,20 +102,24 @@ if userge.has_bot:
 
     async def check_new_bot_user(user: Union[int, str, User]) -> bool:
         user_ = await userge.bot.get_user_dict(user, attr_dict=True)
-        found = await BOT_START.find_one({"user_id": user_.id})
-        if not found:
-            start_date = str(date.today().strftime("%B %d, %Y")).replace(",", "")
-            log_msg = (
-                f"A <b>New User</b> Started your Bot \n\n• <i>ID</i>: <code>{user_.id}</code>\n"
-                f"  👤 : {'@' + user_.uname if user_.uname else user_.mention}"
-            )
-            await asyncio.gather(
-                BOT_START.insert_one(
-                    {"firstname": user_.flname, "user_id": user_.id, "date": start_date}
-                ),
-                CHANNEL.log(log_msg),
-            )
-        return bool(found)
+        if user_.id in Config.OWNER_ID or user_.id in Config.SUDO_USERS:
+            found = True
+        else:
+            found = await BOT_START.find_one({"user_id": user_.id})
+            if not found:
+                start_date = str(date.today().strftime("%B %d, %Y")).replace(",", "")
+                log_msg = (
+                    f"A <b>New User</b> Started your Bot \n\n• <i>ID</i>: <code>{user_.id}</code>\n"
+                    f"  👤 : {'@' + user_.uname if user_.uname else user_.mention}"
+                )
+                await asyncio.gather(
+                    BOT_START.insert_one(
+                        {"firstname": user_.flname, "user_id": user_.id, "date": start_date}
+                    ),
+                    CHANNEL.log(log_msg),
+                )
+        return not bool(found)
+        
 
     @userge.bot.on_message(filters.private & filters.regex(pattern=r"^/start$"))
     async def start_bot(_, message: Message):
@@ -153,7 +157,7 @@ My Master is: {owner_.flname}</b>
                 InlineKeyboardButton("⚡️  REPO", url=Config.UPSTREAM_REPO)
             ]
         ]
-        if message.from_user.id in Config.OWNER_ID:
+        if from_user.id in Config.OWNER_ID:
             btns.append(InlineKeyboardButton("➕ ADD TO GROUP", callback_data="add_to_grp"))
         try:
             await send_bot_media(message, start_msg, InlineKeyboardMarkup(btns))
