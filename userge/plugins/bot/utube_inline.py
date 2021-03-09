@@ -1,11 +1,11 @@
-""" Download Youtube Video/ Audio in a User friendly interface """
+""" Download Youtube Video / Audio in a User friendly interface """
 # --------------------------- #
 #   Modded ytdl by code-rgb   #
 # --------------------------- #
 
 import glob
 import os
-import re
+from re import compile as comp_regex
 from collections import defaultdict
 from pathlib import Path
 from time import time
@@ -41,8 +41,8 @@ from ..misc.upload import upload
 LOGGER = userge.getLogger(__name__)
 CHANNEL = userge.getCLogger(__name__)
 BASE_YT_URL = "https://www.youtube.com/watch?v="
-YOUTUBE_REGEX = re.compile(
-    r"(?:(?:https?:)?\/\/)?(?:(?:www|m)\.)?(?:(?:youtube\.com|youtu.be))(?:\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(?:\S+)?"
+YOUTUBE_REGEX = comp_regex(
+   r"(?:youtube\.com|youtu\.be)/(?:[\w-]+\?v=|embed/|v/)?([\w-]{11})"
 )
 PATH = "./userge/xcache/ytsearch.json"
 
@@ -409,7 +409,7 @@ def _mp3Dl(url: str, starttime, uid: str):
 
 
 def get_yt_video_id(url: str):
-    # https://regex101.com/r/boXuXb/1
+    # https://regex101.com/r/6OrGWH/1
     match = YOUTUBE_REGEX.search(url)
     if match:
         return match.group(1)
