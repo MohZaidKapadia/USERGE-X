@@ -154,7 +154,7 @@ My Master is: {owner_.flname}</b>
         btns = [
             [
                 InlineKeyboardButton("👋  CONTACT", url=contact_url),
-                InlineKeyboardButton("⚡️  REPO", url=Config.UPSTREAM_REPO)
+                InlineKeyboardButton("⚡️  REPO", url=Config.UPSTREAM_REPO),
             ]
         ]
         if from_user.id in Config.OWNER_ID:
