@@ -119,6 +119,8 @@ if userge.has_bot:
     @userge.bot.on_message(filters.private & filters.regex(pattern=r"^/start$"))
     async def start_bot(_, message: Message):
         c_info = await get_bot_info()
+        bot_ = c_info.get("bot")
+        owner_ = c_info.get("owner")
         from_user = await userge.bot.get_user_dict(message.from_user, attr_dict=True)
         if not (from_user.id in Config.OWNER_ID or from_user.id in Config.SUDO_USERS):
             if await BOT_BAN.find_one({"user_id": from_user.id}):
@@ -126,11 +128,11 @@ if userge.has_bot:
                 return
         start_msg = f"""
     Hello {from_user.mention},
-    Nice To Meet You! I'm <b>{c_info.bot.flname}</b> A Bot.
+    Nice To Meet You! I'm <b>{bot_.flname}</b> A Bot.
 
         <b><i>Powered by</i> <a href='https://t.me/x_xtests'>USERGE-X</a>
 
-    My Master is: {c_info.master.flname}</b>
+    My Master is: {owner_.flname}</b>
     <i>You can contact my <b>Master</b> and checkout the <b>Repo</b> For more info.</i>
     """
         if Config.BOT_FORWARDS:
@@ -140,9 +142,9 @@ if userge.has_bot:
                 "All your messages here will be forwarded to my <b>MASTER</b>"
             )
         contact_url = (
-            f"https://t.me/{c_info.owner.uname}"
-            if c_info.owner.uname
-            else f"tg://user?id={c_info.owner.id}"
+            f"https://t.me/{owner_.uname}"
+            if owner_.uname
+            else f"tg://user?id={owner_.id}"
         )
         btns = [
             [
