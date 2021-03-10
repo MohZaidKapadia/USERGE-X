@@ -253,8 +253,7 @@ My Master is: {owner_.flname}</b>
         user_id = msg.from_user.id
         if await BOT_BAN.find_one({"user_id": user_id}):
             LOGGER.info(
-                r"<b>\\#BotPM//</b>"
-                f"\n\nBanned UserID: {user_id} ignored from bot."
+                r"<b>\\#BotPM//</b>" f"\n\nBanned UserID: {user_id} ignored from bot."
             )
             await msg.stop_propagation()
         elif await is_flood(user_id):
