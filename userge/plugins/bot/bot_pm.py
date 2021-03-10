@@ -7,7 +7,6 @@ import asyncio
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from re import compile as comp_regex
-from time import time
 from typing import Optional, Union
 
 from pyrogram import StopPropagation, filters
@@ -19,7 +18,7 @@ from pyrogram.types import (
     User,
 )
 
-from userge import Config, Message, get_collection, userge
+from userge import Config, Message, get_collection, userge, pool
 from userge.utils import check_owner, get_file_id
 
 # Loggers
@@ -225,15 +224,19 @@ My Master is: {owner_.flname}</b>
         await userge.bot.send_message(
             Config.OWNER_ID[0], flood_msg, reply_markup=buttons
         )
-
-    async def is_flood(uid: int) -> Optional[bool]:
+    
+    def time_now() -> Union[float, int]:
+        return datetime.timestamp(datetime.now())
+    
+    @pool.run_in_thread
+    def is_flood(uid: int) -> Optional[bool]:
         """Checks if a user is flooding"""
-        FloodConfig.USERS[uid].append(time())
+        FloodConfig.USERS[uid].append(time_now())
         if (
             len(
                 list(
                     filter(
-                        lambda x: time() - int(x) < FloodConfig.SECONDS,
+                        lambda x: time_now() - int(x) < FloodConfig.SECONDS,
                         FloodConfig.USERS[uid],
                     )
                 )
@@ -242,7 +245,7 @@ My Master is: {owner_.flname}</b>
         ):
             FloodConfig.USERS[uid] = list(
                 filter(
-                    lambda x: time() - int(x) < FloodConfig.SECONDS,
+                    lambda x: time_now() - int(x) < FloodConfig.SECONDS,
                     FloodConfig.USERS[uid],
                 )
             )
