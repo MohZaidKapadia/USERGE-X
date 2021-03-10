@@ -248,7 +248,7 @@ My Master is: {owner_.flname}</b>
             )
             return True
 
-    @userge.bot.on_message(filters.private & ~PRIV_USERS, group=-100)
+    @userge.bot.on_message(filters.private & ~FloodConfig.PRIV_USERS, group=-100)
     async def antif_on_msg(_, msg: Message):
         user_id = msg.from_user.id
         if await BOT_BAN.find_one({"user_id": user_id}):
@@ -262,7 +262,7 @@ My Master is: {owner_.flname}</b>
         elif user_id in BANNED_USERS:
             FloodConfig.BANNED_USERS.remove(user_id)
 
-    @userge.bot.on_callback_query(~PRIV_USERS, group=-100)
+    @userge.bot.on_callback_query(~FloodConfig.PRIV_USERS, group=-100)
     async def antif_on_cb(_, c_q: CallbackQuery):
         user_id = c_q.from_user.id
         banned_txt = "You are banned from this bot !"
