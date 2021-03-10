@@ -33,18 +33,13 @@ _CACHED_INFO = {}
 # Regex
 TG_LINK_REGEX = comp_regex(r"http[s]?://[\w.]+/(?:[c|s]/)?(\w+)/([0-9]+)")
 
-# Flood Control
-_PRIV_USERS = Config.SUDO_USERS
-_PRIV_USERS.update(Config.OWNER_ID)
-
 
 class FloodConfig:
     BANNED_USERS = filters.user()
     USERS = defaultdict(list)
     MESSAGES = 3
     SECONDS = 6
-    CONVERTERS = set()
-    PRIV_USERS = filters.user(list(_PRIV_USERS))
+    OWNER = filters.user(list(Config.OWNER_ID))
 
 
 if userge.has_bot:
@@ -203,11 +198,13 @@ My Master is: {owner_.flname}</b>
 
     async def send_flood_alert(user_id: Union[int, User]) -> None:
         user_ = await userge.bot.get_user_dict(user_id, attr_dict=True)
+        if user_.id in FloodConfig.BANNED_USERS:
+            return
         flood_msg = (
-            "⚠️ <b>/\/\Flood Warning//</b>\n\n"
-            f"• <i>ID</i>: <code>{user_.id}</code>\n"
-            f"  👤 : {'@' + user_.uname if user_.uname else user_.mention}\n\n"
-            "Is spamming your bot !, <u>Quick Action:</u> `Ignored from bot for a while.`"
+            r"<b>\\#Flood Warning//</b>"
+            f"\n\n👤 **USER** : {'@' + user_.uname if user_.uname else user_.mention}\n"
+            f"\t🆔 : <code>{user_.id}</code>\n\n"
+            "⚠️ Is spamming your bot !\n<u>Quick Action</u> : `Ignored from bot for a while.`"
         )
         buttons = InlineKeyboardMarkup(
             [
@@ -251,39 +248,39 @@ My Master is: {owner_.flname}</b>
             )
             return True
 
-    @userge.bot.on_message(filters.private & ~FloodConfig.PRIV_USERS, group=-100)
+    @userge.bot.on_message(filters.private & ~FloodConfig.OWNER, group=-100)
     async def antif_on_msg(_, msg: Message):
         user_id = msg.from_user.id
         if await BOT_BAN.find_one({"user_id": user_id}):
             LOGGER.info(
-                f"**/\/\#BotPM//**\n\nBanned UserID: {user_id} ignored from bot."
+                r"<b>\\#BotPM//</b>"
+                f"\n\nBanned UserID: {user_id} ignored from bot."
             )
             await msg.stop_propagation()
-        if await is_flood(user_id):
-            FloodConfig.BANNED_USERS.add(user_id)
+        elif await is_flood(user_id):
             await send_flood_alert(msg.from_user)
-        elif user_id in BANNED_USERS:
+            FloodConfig.BANNED_USERS.add(user_id)
+            await msg.stop_propagation()
+        elif user_id in FloodConfig.BANNED_USERS:
             FloodConfig.BANNED_USERS.remove(user_id)
 
-    @userge.bot.on_callback_query(~FloodConfig.PRIV_USERS, group=-100)
+    @userge.bot.on_callback_query(~FloodConfig.OWNER, group=-100)
     async def antif_on_cb(_, c_q: CallbackQuery):
         user_id = c_q.from_user.id
         banned_txt = "You are banned from this bot !"
-        flood_alert = (
-            f"A <b>New User</b> Started your Bot \n\n• <i>ID</i>: <code>{user_.id}</code>\n"
-            f"  👤 : {'@' + user_.uname if user_.uname else user_.mention}"
-        )
         if await BOT_BAN.find_one({"user_id": user_id}):
             await c_q.answer(banned_txt)
             LOGGER.info(
-                f"**/\/\#Callback//**\n\nBanned UserID: {user_id} ignored from bot."
+                r"<b>\\#Callback//</b>"
+                f"\n\nBanned UserID: {user_id} ignored from bot."
             )
             raise StopPropagation
-        if await is_flood(user_id):
+        elif await is_flood(user_id):
             await c_q.answer(banned_txt)
-            FloodConfig.BANNED_USERS.add(user_id)
             await send_flood_alert(c_q.from_user)
-        elif user_id in BANNED_USERS:
+            FloodConfig.BANNED_USERS.add(user_id)
+            raise StopPropagation
+        elif user_id in FloodConfig.BANNED_USERS:
             FloodConfig.BANNED_USERS.remove(user_id)
 
     ########################################################
