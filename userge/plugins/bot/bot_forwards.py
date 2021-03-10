@@ -138,7 +138,7 @@ if userge.has_bot:
         filters.user(list(Config.OWNER_ID))
         & filters.private
         & filters.incoming
-        & filters.regex(pattern=r"^\/ban(?: )(.+)")
+        & filters.regex(pattern=r"^/ban\s+(.*)")
     )
     async def bot_ban_(_, message: Message):
         """ ban a user from bot """
@@ -152,13 +152,11 @@ if userge.has_bot:
                 message.chat.id, "Ban Aborted! provide a reason first!"
             )
             return
-        get_mem = await userge.bot.get_users(user_id)
-        firstname = get_mem.first_name
-        user_id = get_mem.id
-        if user_id in Config.OWNER_ID:
-            await start_ban.edit(r"I Can't Ban You My Master")
+        ban_user = await userge.bot.get_user_dict(user_id, attr_dict=True)
+        if ban_user.id in Config.OWNER_ID:
+            await start_ban.edit("I Can't Ban You My Master")
             return
-        if user_id in Config.SUDO_USERS:
+        if ban_user.id in Config.SUDO_USERS:
             await start_ban.edit(
                 "That user is in my Sudo List,"
                 "Hence I can't ban him from bot\n"
@@ -166,29 +164,41 @@ if userge.has_bot:
                 del_in=5,
             )
             return
-        found = await BOT_BAN.find_one({"user_id": user_id})
+        found = await BOT_BAN.find_one({"user_id": ban_user.id})
         if found:
             await start_ban.edit(
-                "**#Already_Banned From Bot PM**\n\n"
+                "**#Already_Banned_from_Bot_PM**\n\n"
                 "User Already Exists in My Bot BAN List.\n"
                 f"**Reason For Bot BAN:** `{found['reason']}`",
                 del_in=5,
             )
-            return
+        else:
+            await start_ban.edit(
+                await ban_from_bot_pm(ban_user, reason),
+                log=__name__
+            )
+
+    async def ban_from_bot_pm(ban_user, reason: str, log: str = False) -> None:
+        user_ = await userge.bot.get_user_dict(ban_user, attr_dict=True)
         banned_msg = (
-            "<i>**You Have been Banned Forever**" f"</i>\n**Reason** : {reason}"
+            f"<i>**You Have been Banned Forever**" f"</i>\n**Reason** : {reason}"
         )
         await asyncio.gather(
             BOT_BAN.insert_one(
-                {"firstname": firstname, "user_id": user_id, "reason": reason}
+                {"firstname": user_.fname, "user_id": user_.id, "reason": reason}
             ),
-            start_ban.edit(
-                r"\\**#Banned From Bot PM_User**//"
-                f"\n\n**First Name:** [{firstname}](tg://user?id={user_id})\n"
-                f"**User ID:** `{user_id}`\n**Reason:** `{reason}`"
-            ),
-            userge.bot.send_message(user_id, banned_msg),
+
+            userge.bot.send_message(user_.id, banned_msg),
         )
+        info = (
+            r"\\**#Banned_Bot_PM_User**//"
+            f"\n\n👤 {user_.mention}\n"
+            f"**First Name:** {user_.fname}\n"
+            f"**User ID:** `{user_.id}`\n**Reason:** `{reason}`"
+        )
+        if log:
+            await userge.getCLogger(log).log(info)
+        return info
 
     @userge.bot.on_message(
         allowForwardFilter
@@ -218,7 +228,7 @@ if userge.has_bot:
                     await replied.copy(b_id)
                 else:
                     await replied.forward(b_id)
-                await asyncio.sleep(0.05)
+                await asyncio.sleep(0.2)
                 # https://github.com/aiogram/aiogram/blob/ee12911f240175d216ce33c78012994a34fe2e25/examples/broadcast_example.py#L65
             except FloodWait as e:
                 await asyncio.sleep(e.x)
@@ -385,7 +395,7 @@ async def ungban_user(message: Message):
     await asyncio.gather(
         BOT_BAN.delete_one(found),
         message.edit(
-            r"\\**#UnBotbanned_User**//"
+            r"\\**#UnBot_Banned_User**//"
             f"\n\n**First Name:** {mention_html(user_id, firstname)}"
             f"**User ID:** `{user_id}`"
         ),

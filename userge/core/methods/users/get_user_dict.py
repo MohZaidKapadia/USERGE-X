@@ -22,6 +22,12 @@ class GetUserDict(RawClient):  # pylint: disable=missing-class-docstring
         `id`(chat id), `fname`(first name), `lname`(last name),
         `flname`(full name), `uname`(username) and `mention`.
         """
+        if isinstance(user_id, dict):
+            return AttributeDict(user_id) if attr_dict else user_id
+        if isinstance(user_id, AttributeDict):
+            if attr_dict:
+                return user_id
+            user_id = user_id.id
         if isinstance(user_id, User):
             user_obj = user_id
         else:

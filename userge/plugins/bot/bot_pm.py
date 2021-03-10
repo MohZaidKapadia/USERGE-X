@@ -8,7 +8,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from re import compile as comp_regex
 from typing import Optional, Union
-
+from .bot_forwards import ban_from_bot_pm
 from pyrogram import StopPropagation, filters
 from pyrogram.errors import BadRequest, FloodWait
 from pyrogram.types import (
@@ -183,8 +183,9 @@ My Master is: {owner_.flname}</b>
             )
         await check_new_bot_user(message.from_user)
 
-    @check_owner
+    
     @userge.bot.on_callback_query(filters.regex(pattern=r"^add_to_grp$"))
+    @check_owner
     async def add_to_grp(c_q: CallbackQuery):
         await c_q.answer()
         msg = "<b>🤖 Add Your Bot to Group</b> \n\n <u>Note:</u>  <i>Admin Privilege Required !</i>"
@@ -201,10 +202,10 @@ My Master is: {owner_.flname}</b>
         if user_.id in FloodConfig.BANNED_USERS:
             return
         flood_msg = (
-            r"<b>\\#Flood Warning//</b>"
-            f"\n\n👤 **USER** : {'@' + user_.uname if user_.uname else user_.mention}\n"
-            f"\t🆔 : <code>{user_.id}</code>\n\n"
-            "⚠️ Is spamming your bot !\n<u>Quick Action</u> : `Ignored from bot for a while.`"
+            r"⚠️ <b>\\#Flood_Warning//</b>"
+            f"\n\n\t\t👤: {'@' + user_.uname if user_.uname else user_.mention}\n"
+            f"\t\tUser ID: <code>{user_.id}</code>\n\n"
+            "Is spamming your bot !\n<b>Quick Action</b> : `Ignored from bot for a while.`"
         )
         buttons = InlineKeyboardMarkup(
             [
@@ -220,6 +221,16 @@ My Master is: {owner_.flname}</b>
         )
         await userge.bot.send_message(
             Config.OWNER_ID[0], flood_msg, reply_markup=buttons
+        )
+
+    @userge.bot.on_callback_query(filters.regex(pattern=r"^bot_pm_ban_([0-9]+)"))
+    @check_owner
+    async def bot_pm_ban_cb(c_q: CallbackQuery):
+        user_id = int(c_q.match.group(1))
+        await asyncio.gather(
+            c_q.answer(f"Banning UserID -> {user_id} ...", show_alert=False),
+            ban_from_bot_pm(user_id, "Spamming Bot", log=__name__),
+            c_q.edit_message_text(f"✅ **Successfully Banned**  User ID: {user_id}")
         )
 
     def time_now() -> Union[float, int]:
@@ -253,7 +264,7 @@ My Master is: {owner_.flname}</b>
         user_id = msg.from_user.id
         if await BOT_BAN.find_one({"user_id": user_id}):
             LOGGER.info(
-                r"<b>\\#BotPM//</b>" f"\n\nBanned UserID: {user_id} ignored from bot."
+                r"<b>\\#Bot_PM//</b>" f"\n\nBanned UserID: {user_id} ignored from bot."
             )
             await msg.stop_propagation()
         elif await is_flood(user_id):
@@ -281,6 +292,7 @@ My Master is: {owner_.flname}</b>
             raise StopPropagation
         elif user_id in FloodConfig.BANNED_USERS:
             FloodConfig.BANNED_USERS.remove(user_id)
+
 
     ########################################################
 
