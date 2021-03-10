@@ -6,7 +6,8 @@
 import asyncio
 from datetime import date, datetime, timedelta
 from re import compile as comp_regex
-from typing import Union
+from typing import Union, Optional
+from pyrogram import StopPropagation
 
 from pyrogram import filters
 from pyrogram.errors import BadRequest, FloodWait
@@ -16,9 +17,10 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     User,
 )
-
+from time import time
 from userge import Config, Message, get_collection, userge
 from userge.utils import check_owner, get_file_id
+from collections import defaultdict
 
 # Loggers
 CHANNEL = userge.getCLogger(__name__)
@@ -32,6 +34,17 @@ _CACHED_INFO = {}
 # Regex
 TG_LINK_REGEX = comp_regex(r"http[s]?://[\w.]+/(?:[c|s]/)?(\w+)/([0-9]+)")
 
+# Flood Control
+_PRIV_USERS = Config.SUDO_USERS
+_PRIV_USERS.update(Config.OWNER_ID)
+
+class FloodConfig:
+    BANNED_USERS = filters.user()
+    USERS = defaultdict(list)
+    MESSAGES = 3
+    SECONDS = 6
+    CONVERTERS = set()
+    PRIV_USERS = filters.user(list(_PRIV_USERS))
 
 if userge.has_bot:
 
@@ -186,6 +199,74 @@ My Master is: {owner_.flname}</b>
         await c_q.edit_message_text(msg, reply_markup=buttons)
 
 
+    ##############| USERGE-X Bot Antiflood |##############
+
+    async def send_flood_alert(user_id: Union[int, User]) -> None:
+        user_ = await userge.bot.get_user_dict(user_id, attr_dict=True)
+        flood_msg = (
+            "⚠️ <b>/\/\Flood Warning//</b>\n\n"
+            f"• <i>ID</i>: <code>{user_.id}</code>\n"
+            f"  👤 : {'@' + user_.uname if user_.uname else user_.mention}\n\n"
+            "Is spamming your bot !, <u>Quick Action:</u> `Ignored from bot for a while.`"
+        )
+        buttons = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton("🚫  BAN", callback_data=f"bot_pm_ban_{user_.id}"),
+                    InlineKeyboardButton("➖ Antiflood [OFF]", callback_data=f"antiflood_off")
+                ]
+                
+            ]
+        )
+        await userge.bot.send_message(
+            Config.OWNER_ID[0],
+            flood_msg,
+            reply_markup=buttons
+        )
+
+    async def is_flood(uid: int) -> Optional[bool]:
+        """Checks if a user is flooding"""
+        FloodConfig.USERS[uid].append(time())
+        if len(list(filter(lambda x: time() - int(x) < FloodConfig.SECONDS, FloodConfig.USERS[uid]))) > FloodConfig.MESSAGES:
+            FloodConfig.USERS[uid] = list(filter(lambda x: time() - int(x) < FloodConfig.SECONDS, FloodConfig.USERS[uid]))
+            return True
+
+
+    @userge.bot.on_message(filters.private & ~PRIV_USERS, group=-100)
+    async def antif_on_msg(_, msg: Message):
+        user_id = msg.from_user.id
+        if await BOT_BAN.find_one({"user_id": user_id}):
+            LOGGER.info(f"**/\/\#BotPM//**\n\nBanned UserID: {user_id} ignored from bot.")
+            await msg.stop_propagation()
+        if await is_flood(user_id):
+            FloodConfig.BANNED_USERS.add(user_id)
+            await send_flood_alert(msg.from_user)
+        elif user_id in BANNED_USERS:
+            FloodConfig.BANNED_USERS.remove(user_id)
+
+    @userge.bot.on_callback_query(~PRIV_USERS, group=-100)
+    async def antif_on_cb(_, c_q: CallbackQuery):
+        user_id = c_q.from_user.id
+        banned_txt = "You are banned from this bot !"
+        flood_alert = (
+            f"A <b>New User</b> Started your Bot \n\n• <i>ID</i>: <code>{user_.id}</code>\n"
+            f"  👤 : {'@' + user_.uname if user_.uname else user_.mention}"
+        )
+        if await BOT_BAN.find_one({"user_id": user_id}):
+            await c_q.answer(banned_txt)
+            LOGGER.info(f"**/\/\#Callback//**\n\nBanned UserID: {user_id} ignored from bot.")
+            raise StopPropagation
+        if await is_flood(user_id):
+            await c_q.answer(banned_txt)
+            FloodConfig.BANNED_USERS.add(user_id)
+            await send_flood_alert(c_q.from_user)
+        elif user_id in BANNED_USERS:
+            FloodConfig.BANNED_USERS.remove(user_id)
+
+
+    ########################################################
+
+
 @userge.on_cmd(
     "bot_users",
     about={
@@ -207,3 +288,10 @@ async def bot_users_(message: Message):
         if msg
         else "`Nobody Does it Better`"
     )
+
+
+
+
+
+
+
