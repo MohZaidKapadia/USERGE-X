@@ -173,10 +173,7 @@ if userge.has_bot:
                 del_in=5,
             )
         else:
-            await start_ban.edit(
-                await ban_from_bot_pm(ban_user, reason),
-                log=__name__
-            )
+            await start_ban.edit(await ban_from_bot_pm(ban_user, reason), log=__name__)
 
     async def ban_from_bot_pm(ban_user, reason: str, log: str = False) -> None:
         user_ = await userge.bot.get_user_dict(ban_user, attr_dict=True)
@@ -187,7 +184,6 @@ if userge.has_bot:
             BOT_BAN.insert_one(
                 {"firstname": user_.fname, "user_id": user_.id, "reason": reason}
             ),
-
             userge.bot.send_message(user_.id, banned_msg),
         )
         info = (

@@ -8,7 +8,7 @@ from collections import defaultdict
 from datetime import date, datetime, timedelta
 from re import compile as comp_regex
 from typing import Optional, Union
-from .bot_forwards import ban_from_bot_pm
+
 from pyrogram import StopPropagation, filters
 from pyrogram.errors import BadRequest, FloodWait
 from pyrogram.types import (
@@ -20,6 +20,8 @@ from pyrogram.types import (
 
 from userge import Config, Message, get_collection, pool, userge
 from userge.utils import check_owner, get_file_id
+
+from .bot_forwards import ban_from_bot_pm
 
 # Loggers
 CHANNEL = userge.getCLogger(__name__)
@@ -183,7 +185,6 @@ My Master is: {owner_.flname}</b>
             )
         await check_new_bot_user(message.from_user)
 
-    
     @userge.bot.on_callback_query(filters.regex(pattern=r"^add_to_grp$"))
     @check_owner
     async def add_to_grp(c_q: CallbackQuery):
@@ -230,7 +231,7 @@ My Master is: {owner_.flname}</b>
         await asyncio.gather(
             c_q.answer(f"Banning UserID -> {user_id} ...", show_alert=False),
             ban_from_bot_pm(user_id, "Spamming Bot", log=__name__),
-            c_q.edit_message_text(f"✅ **Successfully Banned**  User ID: {user_id}")
+            c_q.edit_message_text(f"✅ **Successfully Banned**  User ID: {user_id}"),
         )
 
     def time_now() -> Union[float, int]:
@@ -292,7 +293,6 @@ My Master is: {owner_.flname}</b>
             raise StopPropagation
         elif user_id in FloodConfig.BANNED_USERS:
             FloodConfig.BANNED_USERS.remove(user_id)
-
 
     ########################################################
 
