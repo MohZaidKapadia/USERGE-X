@@ -18,7 +18,7 @@ from pyrogram.types import (
     User,
 )
 
-from userge import Config, Message, get_collection, userge, pool
+from userge import Config, Message, get_collection, pool, userge
 from userge.utils import check_owner, get_file_id
 
 # Loggers
@@ -224,10 +224,10 @@ My Master is: {owner_.flname}</b>
         await userge.bot.send_message(
             Config.OWNER_ID[0], flood_msg, reply_markup=buttons
         )
-    
+
     def time_now() -> Union[float, int]:
         return datetime.timestamp(datetime.now())
-    
+
     @pool.run_in_thread
     def is_flood(uid: int) -> Optional[bool]:
         """Checks if a user is flooding"""
