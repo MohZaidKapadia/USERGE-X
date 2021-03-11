@@ -42,6 +42,7 @@ class FloodConfig:
     MESSAGES = 3
     SECONDS = 6
     OWNER = filters.user(list(Config.OWNER_ID))
+    ALERT = {}
 
 
 if userge.has_bot:
@@ -152,15 +153,15 @@ if userge.has_bot:
             ]
         else:
             start_msg = f"""
-👋 Hello {from_user.fname},
+👋  Hello {from_user.fname},
 Nice To Meet You !, I'm <b>{bot_.fname}</b> A Bot.
 
-        <b><i>Powered by</i> [USERGE-X](https://t.me/x_xtests)</b>
+        <b><i>Powered by</i> [USERGE-X](https://t.me/x_xtests)
 
-My <b>Master is : {owner_.flname}</b>
+My Master is : {owner_.flname}</b>
 """
             if Config.BOT_FORWARDS:
-                start_msg += "\n\n<b>📌 NOTE:\n  </b>• You can 📨 <b>Send Message</b> here to contact my <b>Master.</b>"
+                start_msg += "<b>\n📌 NOTE:\n  </b>• You can 📨 <b>Send Message</b> here to contact my <b>Master.</b>"
             contact_url = (
                 f"https://t.me/{owner_.uname}"
                 if owner_.uname
@@ -199,6 +200,11 @@ My <b>Master is : {owner_.flname}</b>
         user_ = await userge.bot.get_user_dict(user_id, attr_dict=True)
         if user_.id in FloodConfig.BANNED_USERS:
             return
+        if user_.id in Flood.ALERT:
+          if FloodConfig.ALERT[user_.id] > time_now():
+              return
+        else:
+            FloodConfig.ALERT[user_.id] = datetime.timestamp(datetime.fromtimestamp(FloodConfig.USERS[user_.id][-1]) + timedelta(hour=6))
         flood_msg = (
             r"⚠️ <b>\\#Flood_Warning//</b>"
             f"\n\n\t\t👤: {'@' + user_.uname if user_.uname else user_.mention}\n"
