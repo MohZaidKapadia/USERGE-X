@@ -201,10 +201,13 @@ My Master is : {owner_.flname}</b>
         if user_.id in FloodConfig.BANNED_USERS:
             return
         if user_.id in Flood.ALERT:
-          if FloodConfig.ALERT[user_.id] > time_now():
-              return
+            if FloodConfig.ALERT[user_.id] > time_now():
+                return
         else:
-            FloodConfig.ALERT[user_.id] = datetime.timestamp(datetime.fromtimestamp(FloodConfig.USERS[user_.id][-1]) + timedelta(hour=6))
+            FloodConfig.ALERT[user_.id] = datetime.timestamp(
+                datetime.fromtimestamp(FloodConfig.USERS[user_.id][-1])
+                + timedelta(hour=6)
+            )
         flood_msg = (
             r"⚠️ <b>\\#Flood_Warning//</b>"
             f"\n\n\t\t👤: {'@' + user_.uname if user_.uname else user_.mention}\n"
