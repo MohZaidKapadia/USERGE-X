@@ -42,7 +42,6 @@ class FloodConfig:
     MESSAGES = 3
     SECONDS = 6
     OWNER = filters.user(list(Config.OWNER_ID))
-    
 
 
 if userge.has_bot:
@@ -149,15 +148,21 @@ if userge.has_bot:
         if from_user.id in Config.OWNER_ID:
             start_msg = (
                 f"Hello {from_user.mention},\n"
-            "I'm at your Service.\n\n<b><i>Powered by</i> <a href='https://t.me/x_xtests'>USERGE-X</a>"
-            "\n\nBelow is your 🛠 <b>CONTROL PANNEL</b>"
+                "I'm at your Service.\n\n<b><i>Powered by</i> <a href='https://t.me/x_xtests'>USERGE-X</a>"
+                "\n\nBelow is your 🛠 <b>CONTROL PANNEL</b>"
             )
-            btns = [[  InlineKeyboardButton("💬 Bot Forwards [☑️]", callback_data="bot_fwd_off"),
-            InlineKeyboardButton("🤖 Bot Start Msg [☑️]", callback_data="bot_start_off")
-            ],[
-            InlineKeyboardButton("➕  ADD TO GROUP", callback_data="add_to_grp")
-                ]]
-            
+            btns = [
+                [
+                    InlineKeyboardButton(
+                        "💬 Bot Forwards [☑️]", callback_data="bot_fwd_off"
+                    ),
+                    InlineKeyboardButton(
+                        "🤖 Bot Start Msg [☑️]", callback_data="bot_start_off"
+                    ),
+                ],
+                [InlineKeyboardButton("➕  ADD TO GROUP", callback_data="add_to_grp")],
+            ]
+
         else:
             start_msg = f"""
 Hello {from_user.mention},
