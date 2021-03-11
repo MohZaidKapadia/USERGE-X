@@ -42,6 +42,7 @@ class FloodConfig:
     MESSAGES = 3
     SECONDS = 6
     OWNER = filters.user(list(Config.OWNER_ID))
+    
 
 
 if userge.has_bot:
@@ -145,7 +146,16 @@ if userge.has_bot:
             if await BOT_BAN.find_one({"user_id": from_user.id}):
                 LOGGER.info(f"Banned UserID: {from_user.id} ignored from bot.")
                 return
-        start_msg = f"""
+        if from_user.id in Config.OWNER_ID:
+            start_msg = f"Hello {from_user.mention},\nI'm at your Service.\n\nBelow is your 🛠 <b>CONTROL PANNEL</b>"
+            btns = [[  InlineKeyboardButton("💬 Bot Forwards [☑️]", callback_data="bot_fwd_off"),
+            InlineKeyboardButton("🤖 Bot Start Msg [☑️]", callback_data="bot_start_off")
+            ],[
+            InlineKeyboardButton("➕  ADD TO GROUP", callback_data="add_to_grp")
+                ]]
+            
+        else:
+            start_msg = f"""
 Hello {from_user.mention},
 Nice To Meet You! I'm <b>{bot_.flname}</b> A Bot.
 
@@ -154,27 +164,25 @@ Nice To Meet You! I'm <b>{bot_.flname}</b> A Bot.
 My Master is: {owner_.flname}</b>
 <i>You can contact my <b>Master</b> and checkout the <b>Repo</b> For more info.</i>
 """
-        if Config.BOT_FORWARDS:
-            start_msg += (
-                "\n<b>NOTE: "
-                "Bot Forwarding is</b> :  ☑️ `Enabled`\n"
-                "All your messages here will be forwarded to my <b>MASTER</b>"
+            if Config.BOT_FORWARDS:
+                start_msg += (
+                    "\n<b>NOTE: "
+                    "Bot Forwarding is</b> :  ☑️ `Enabled`\n"
+                    "All your messages here will be forwarded to my <b>MASTER</b>"
+                )
+    
+        else:
+            contact_url = (
+                f"https://t.me/{owner_.uname}"
+                if owner_.uname
+                else f"tg://user?id={owner_.id}"
             )
-        contact_url = (
-            f"https://t.me/{owner_.uname}"
-            if owner_.uname
-            else f"tg://user?id={owner_.id}"
-        )
-        btns = [
-            [
-                InlineKeyboardButton("👋  CONTACT", url=contact_url),
-                InlineKeyboardButton("⚡️  REPO", url=Config.UPSTREAM_REPO),
+            btns = [
+                [
+                    InlineKeyboardButton("👤  CONTACT", url=contact_url),
+                    InlineKeyboardButton("🌐  REPO", url=Config.UPSTREAM_REPO),
+                ]
             ]
-        ]
-        if from_user.id in Config.OWNER_ID:
-            btns.append(
-                [InlineKeyboardButton("➕ ADD TO GROUP", callback_data="add_to_grp")]
-            )
         try:
             await send_bot_media(message, start_msg, InlineKeyboardMarkup(btns))
         except FloodWait as e:
@@ -190,7 +198,7 @@ My Master is: {owner_.flname}</b>
     async def add_to_grp(c_q: CallbackQuery):
         await c_q.answer()
         msg = "<b>🤖 Add Your Bot to Group</b> \n\n <u>Note:</u>  <i>Admin Privilege Required !</i>"
-        add_bot = f"http://t.me/{(await get_bot_info()).bot.uname}?startgroup=start"
+        add_bot = f"http://t.me/{(await get_bot_info())['bot'].uname}?startgroup=start"
         buttons = InlineKeyboardMarkup(
             [[InlineKeyboardButton("➕ PRESS TO ADD", url=add_bot)]]
         )
@@ -221,13 +229,13 @@ My Master is: {owner_.flname}</b>
             ]
         )
         await userge.bot.send_message(
-            Config.OWNER_ID[0], flood_msg, reply_markup=buttons
+            Config.LOG_CHANNEL_ID, flood_msg, reply_markup=buttons
         )
 
     @userge.bot.on_callback_query(filters.regex(pattern=r"^bot_pm_ban_([0-9]+)"))
     @check_owner
     async def bot_pm_ban_cb(c_q: CallbackQuery):
-        user_id = int(c_q.match.group(1))
+        user_id = int(c_q.matches[0].group(1))
         await asyncio.gather(
             c_q.answer(f"Banning UserID -> {user_id} ...", show_alert=False),
             ban_from_bot_pm(user_id, "Spamming Bot", log=__name__),
@@ -278,16 +286,15 @@ My Master is: {owner_.flname}</b>
     @userge.bot.on_callback_query(~FloodConfig.OWNER, group=-100)
     async def antif_on_cb(_, c_q: CallbackQuery):
         user_id = c_q.from_user.id
-        banned_txt = "You are banned from this bot !"
         if await BOT_BAN.find_one({"user_id": user_id}):
-            await c_q.answer(banned_txt)
+            await c_q.answer("You are banned from this bot !")
             LOGGER.info(
                 r"<b>\\#Callback//</b>"
                 f"\n\nBanned UserID: {user_id} ignored from bot."
             )
             raise StopPropagation
         elif await is_flood(user_id):
-            await c_q.answer(banned_txt)
+            await c_q.answer("Wooh, Mate Chill ! go slow")
             await send_flood_alert(c_q.from_user)
             FloodConfig.BANNED_USERS.add(user_id)
             raise StopPropagation
