@@ -146,9 +146,7 @@ if userge.has_bot:
                 LOGGER.info(f"Banned UserID: {from_user.id} ignored from bot.")
                 return
         if from_user.id in Config.OWNER_ID:
-            start_msg = (
-                f"Hello Master **{from_user.flname}** !\n"
-            )
+            start_msg = f"Hello Master **{from_user.flname}** !\n"
             btns = [
                 [InlineKeyboardButton("➕  ADD TO GROUP", callback_data="add_to_grp")],
             ]
@@ -162,9 +160,7 @@ Nice To Meet You !, I'm <b>{bot_.fname}</b> A Bot.
 My <b>Master is : {owner_.flname}</b>
 """
             if Config.BOT_FORWARDS:
-                start_msg += (
-                "\n\n<b>📌 NOTE:\n  </b>• You can 📨 <b>Send Message</b> here to contact my <b>Master.</b>"
-                )
+                start_msg += "\n\n<b>📌 NOTE:\n  </b>• You can 📨 <b>Send Message</b> here to contact my <b>Master.</b>"
             contact_url = (
                 f"https://t.me/{owner_.uname}"
                 if owner_.uname
