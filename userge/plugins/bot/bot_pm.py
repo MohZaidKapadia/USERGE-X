@@ -147,37 +147,23 @@ if userge.has_bot:
                 return
         if from_user.id in Config.OWNER_ID:
             start_msg = (
-                f"Hello {from_user.mention},\n"
-                "I'm at your Service.\n\n<b><i>Powered by</i> <a href='https://t.me/x_xtests'>USERGE-X</a>"
-                "\n\nBelow is your 🛠 <b>CONTROL PANNEL</b>"
+                f"Hello Master **{from_user.flname}** !\n"
             )
             btns = [
-                [
-                    InlineKeyboardButton(
-                        "💬 Bot Forwards [☑️]", callback_data="bot_fwd_off"
-                    ),
-                    InlineKeyboardButton(
-                        "🤖 Bot Start Msg [☑️]", callback_data="bot_start_off"
-                    ),
-                ],
                 [InlineKeyboardButton("➕  ADD TO GROUP", callback_data="add_to_grp")],
             ]
-
         else:
             start_msg = f"""
-Hello {from_user.mention},
-Nice To Meet You! I'm <b>{bot_.flname}</b> A Bot.
+👋 Hello {from_user.fname},
+Nice To Meet You !, I'm <b>{bot_.fname}</b> A Bot.
 
-    <b><i>Powered by</i> <a href='https://t.me/x_xtests'>USERGE-X</a>
+        <b><i>Powered by</i> [USERGE-X](https://t.me/x_xtests)</b>
 
-My Master is: {owner_.flname}</b>
-<i>You can contact my <b>Master</b> and checkout the <b>Repo</b> For more info.</i>
+My <b>Master is : {owner_.flname}</b>
 """
             if Config.BOT_FORWARDS:
                 start_msg += (
-                    "\n<b>NOTE: "
-                    "Bot Forwarding is</b> :  ☑️ `Enabled`\n"
-                    "All your messages here will be forwarded to my <b>MASTER</b>"
+                "\n\n<b>📌 NOTE:\n  </b>• You can 📨 <b>Send Message</b> here to contact my <b>Master.</b>"
                 )
             contact_url = (
                 f"https://t.me/{owner_.uname}"
@@ -187,7 +173,7 @@ My Master is: {owner_.flname}</b>
             btns = [
                 [
                     InlineKeyboardButton("👤  CONTACT", url=contact_url),
-                    InlineKeyboardButton("🌐  REPO", url=Config.UPSTREAM_REPO),
+                    InlineKeyboardButton("⭐️  REPO", url=Config.UPSTREAM_REPO),
                 ]
             ]
         try:
