@@ -200,7 +200,7 @@ My Master is : {owner_.flname}</b>
         user_ = await userge.bot.get_user_dict(user_id, attr_dict=True)
         if user_.id in FloodConfig.BANNED_USERS:
             return
-        if user_.id in Flood.ALERT:
+        if user_.id in FloodConfig.ALERT:
             if FloodConfig.ALERT[user_.id] > time_now():
                 return
         else:
@@ -210,8 +210,8 @@ My Master is : {owner_.flname}</b>
             )
         flood_msg = (
             r"⚠️ <b>\\#Flood_Warning//</b>"
-            f"\n\n\t\t👤: {'@' + user_.uname if user_.uname else user_.mention}\n"
-            f"\t\tUser ID: <code>{user_.id}</code>\n\n"
+            f"\n\n\t\tNAME : {'@' + user_.uname if user_.uname else user_.mention}\n"
+            f"\t\tUser ID : <code>{user_.id}</code>\n\n"
             "Is spamming your bot !\n<b>Quick Action</b> : `Ignored from bot for a while.`"
         )
         buttons = InlineKeyboardMarkup(
