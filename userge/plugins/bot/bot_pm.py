@@ -147,7 +147,11 @@ if userge.has_bot:
                 LOGGER.info(f"Banned UserID: {from_user.id} ignored from bot.")
                 return
         if from_user.id in Config.OWNER_ID:
-            start_msg = f"Hello {from_user.mention},\nI'm at your Service.\n\nBelow is your 🛠 <b>CONTROL PANNEL</b>"
+            start_msg = (
+                f"Hello {from_user.mention},\n"
+            "I'm at your Service.\n\n<b><i>Powered by</i> <a href='https://t.me/x_xtests'>USERGE-X</a>"
+            "\n\nBelow is your 🛠 <b>CONTROL PANNEL</b>"
+            )
             btns = [[  InlineKeyboardButton("💬 Bot Forwards [☑️]", callback_data="bot_fwd_off"),
             InlineKeyboardButton("🤖 Bot Start Msg [☑️]", callback_data="bot_start_off")
             ],[
@@ -170,8 +174,6 @@ My Master is: {owner_.flname}</b>
                     "Bot Forwarding is</b> :  ☑️ `Enabled`\n"
                     "All your messages here will be forwarded to my <b>MASTER</b>"
                 )
-    
-        else:
             contact_url = (
                 f"https://t.me/{owner_.uname}"
                 if owner_.uname
