@@ -50,7 +50,7 @@ async def end_vc_(message: Message):
     about={
         "header": "Invite to a voice chat",
         "examples": "{tr}invvc",
-        "flags" {"-l": "randomly invite members"}
+        "flags": {"-l": "randomly invite members"}
     },
     allow_channels=False,
     allow_private=False,
@@ -61,8 +61,11 @@ async def inv_vc_(message: Message):
     limit_ = message.flags.get("-l", 0)
     if limit_ != 0:
         peer_list = await get_peer_list(message.chat.id, limit_) if limit_ > 0 else await get_peer_list(message.chat.id)
-    elif "," in message.input_str:
-        peer_list = await append_peer_user([_.strip() for _ in message.input_str.split(",")])
+    elif message.input_str:
+        if "," in message.input_str:
+            peer_list = await append_peer_user([_.strip() for _ in message.input_str.split(",")])
+        else:
+            peer_list = await append_peer_user([message.input_str.split()[0]])
     if not peer_list:
         return
     await userge.send(
