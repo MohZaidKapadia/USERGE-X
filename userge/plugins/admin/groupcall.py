@@ -115,7 +115,7 @@ async def get_peer_list(chat_id: Union[str, int], limit: int = 10) -> Optional[L
     return await append_peer_user(user_ids, limit)
 
 
-async def append_peer_user(user_ids: List, limit: int) -> Optional[List]:
+async def append_peer_user(user_ids: List, limit: int = None) -> Optional[List]:
     peer_list = []
     for uid in user_ids:
         try:
