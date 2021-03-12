@@ -31,12 +31,14 @@ from userge import Message, userge
     only_admins=True,
 )
 async def start_vc_(message: Message):
+    chat_id = message.chat.id
     await userge.send(
         CreateGroupCall(
-            peer=(await userge.resolve_peer(message.chat.id)),
+            peer=(await userge.resolve_peer(chat_id)),
             random_id=randint(10000, 999999999),
         )
     )
+    await message.edit(f"Started Voice Chat in **Chat ID** : `{chat_id}`", del_in=5, log=__name__)
 
 
 @userge.on_cmd(
@@ -51,7 +53,9 @@ async def start_vc_(message: Message):
     only_admins=True,
 )
 async def end_vc_(message: Message):
-    await userge.send(DiscardGroupCall(call=(await get_group_call(message.chat.id))))
+    chat_id = message.chat.id
+    await userge.send(DiscardGroupCall(call=(await get_group_call(chat_id))))
+    await message.edit(f"Ended Voice Chat in **Chat ID** : `{chat_id}`", del_in=5, log=__name__)
 
 
 @userge.on_cmd(
@@ -67,12 +71,14 @@ async def end_vc_(message: Message):
 )
 async def inv_vc_(message: Message):
     peer_list = None
+    reply = message.reply_to_message
     limit_ = int(message.flags.get("-l", 0))
+    await message.edit("`Inviting Members to Voice Chat ...`")
     if limit_ != 0:
         peer_list = (
-            await get_peer_list(message.chat.id, limit_)
+            await get_peer_list(message, limit_)
             if limit_ > 0
-            else await get_peer_list(message.chat.id)
+            else await get_peer_list(message)
         )
     elif message.input_str:
         if "," in message.input_str:
@@ -81,11 +87,14 @@ async def inv_vc_(message: Message):
             )
         else:
             peer_list = await append_peer_user([message.input_str.split()[0]])
+    elif reply and reply.from_user and not reply.from_user.is_bot:
+        peer_list = await append_peer_user([reply.from_user.id])
     if not peer_list:
         return
     await userge.send(
         InviteToGroupCall(call=(await get_group_call(message.chat.id)), users=peer_list)
     )
+    await message.edit("✅ Invited Successfully !", del_in=5)
 
 
 async def get_group_call(chat_id: Union[int, str]) -> Optional[InputGroupCall]:
@@ -102,7 +111,8 @@ async def get_group_call(chat_id: Union[int, str]) -> Optional[InputGroupCall]:
         return full_chat.call
 
 
-async def get_peer_list(chat_id: Union[str, int], limit: int = 10) -> Optional[List]:
+async def get_peer_list(message: Message, limit: int = 10) -> Optional[List]:
+    chat_id = message.chat.id
     user_ids = [
         member.user.id
         async for member in userge.iter_chat_members(chat_id, limit=100)
