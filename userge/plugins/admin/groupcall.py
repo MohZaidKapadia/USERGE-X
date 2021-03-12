@@ -1,7 +1,7 @@
 from random import randint, sample
 from typing import List, Optional, Union
 
-from pyrogram.errors import PeerIdInvalid, Forbidden
+from pyrogram.errors import Forbidden, PeerIdInvalid
 from pyrogram.raw.functions.channels import GetFullChannel
 from pyrogram.raw.functions.messages import GetFullChat
 from pyrogram.raw.functions.phone import (
@@ -58,7 +58,9 @@ async def end_vc_(message: Message):
     chat_id = message.chat.id
     group_call = await get_group_call(chat_id)
     if not group_call:
-        await message.edit("**No Voice Chat Found** !, Voice Chat already ended", del_in=8)
+        await message.edit(
+            "**No Voice Chat Found** !, Voice Chat already ended", del_in=8
+        )
         return
     await userge.send(DiscardGroupCall(call=group_call))
     await message.edit(
@@ -101,12 +103,12 @@ async def inv_vc_(message: Message):
         return
     group_call = await get_group_call(message.chat.id)
     if not group_call:
-        await message.edit("**No Voice Chat Found** !, first start by .startvc", del_in=8)
+        await message.edit(
+            "**No Voice Chat Found** !, first start by .startvc", del_in=8
+        )
         return
     try:
-        await userge.send(
-            InviteToGroupCall(call=group_call, users=peer_list)
-        )
+        await userge.send(InviteToGroupCall(call=group_call, users=peer_list))
     except Forbidden:
         await message.err("Join Voice Chat First !", del_in=8)
     else:
