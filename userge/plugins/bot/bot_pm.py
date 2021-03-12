@@ -161,7 +161,7 @@ Nice To Meet You !, I'm <b>{bot_.fname}</b> A Bot.
 My Master is : {owner_.flname}</b>
 """
             if Config.BOT_FORWARDS:
-                start_msg += "<b>\n📌 NOTE:\n  </b>• You can 📨 <b>Send Message</b> here to contact my <b>Master.</b>"
+                start_msg += "<b>\n📌 NOTE:</b>\n  • You can 📨 <b>Send Message</b> here to contact my <b>Master.</b>"
             contact_url = (
                 f"https://t.me/{owner_.uname}"
                 if owner_.uname
@@ -206,7 +206,7 @@ My Master is : {owner_.flname}</b>
         else:
             FloodConfig.ALERT[user_.id] = datetime.timestamp(
                 datetime.fromtimestamp(FloodConfig.USERS[user_.id][-1])
-                + timedelta(hour=6)
+                + timedelta(hours=6)
             )
         flood_msg = (
             r"⚠️ <b>\\#Flood_Warning//</b>"
