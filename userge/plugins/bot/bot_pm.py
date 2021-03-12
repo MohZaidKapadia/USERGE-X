@@ -10,7 +10,7 @@ from re import compile as comp_regex
 from typing import Optional, Union
 
 from pyrogram import StopPropagation, filters
-from pyrogram.errors import BadRequest, FloodWait
+from pyrogram.errors import BadRequest, FloodWait, UserIsBlocked
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -226,9 +226,14 @@ My Master is : {owner_.flname}</b>
                 ]
             ]
         )
-        await userge.bot.send_message(
-            Config.LOG_CHANNEL_ID, flood_msg, reply_markup=buttons
-        )
+        try:
+            await userge.bot.send_message(
+                Config.OWNER_ID[0], flood_msg, reply_markup=buttons
+            )
+        except UserIsBlocked:
+            await userge.bot.send_message(
+                Config.LOG_CHANNEL_ID, flood_msg, reply_markup=buttons
+            )
 
     @userge.bot.on_callback_query(filters.regex(pattern=r"^bot_pm_ban_([0-9]+)"))
     @check_owner
