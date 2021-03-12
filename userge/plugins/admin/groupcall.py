@@ -38,7 +38,9 @@ async def start_vc_(message: Message):
             random_id=randint(10000, 999999999),
         )
     )
-    await message.edit(f"Started Voice Chat in **Chat ID** : `{chat_id}`", del_in=5, log=__name__)
+    await message.edit(
+        f"Started Voice Chat in **Chat ID** : `{chat_id}`", del_in=5, log=__name__
+    )
 
 
 @userge.on_cmd(
@@ -55,7 +57,9 @@ async def start_vc_(message: Message):
 async def end_vc_(message: Message):
     chat_id = message.chat.id
     await userge.send(DiscardGroupCall(call=(await get_group_call(chat_id))))
-    await message.edit(f"Ended Voice Chat in **Chat ID** : `{chat_id}`", del_in=5, log=__name__)
+    await message.edit(
+        f"Ended Voice Chat in **Chat ID** : `{chat_id}`", del_in=5, log=__name__
+    )
 
 
 @userge.on_cmd(
