@@ -67,7 +67,7 @@ async def end_vc_(message: Message):
 )
 async def inv_vc_(message: Message):
     peer_list = None
-    limit_ = message.flags.get("-l", 0)
+    limit_ = int(message.flags.get("-l", 0))
     if limit_ != 0:
         peer_list = (
             await get_peer_list(message.chat.id, limit_)
