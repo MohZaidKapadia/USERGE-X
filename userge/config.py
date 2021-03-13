@@ -102,6 +102,7 @@ class Config:
     LASTFM_API_KEY = os.environ.get("LASTFM_API_KEY")
     TG_IDS = [777000, 1087968824, 454000]
     INLINE_NOTES = False
+    BOT_ANTIFLOOD = False
 
 
 def get_version() -> str:
