@@ -198,9 +198,9 @@ async def manage_vcmember(message: Message, to_mute: bool):
         EditGroupCallMember(call=group_call, user_id=user_, muted=to_mute)
     )
     await message.edit(
-        str(user_.user_id) + " **Muted** "
+        str(user_.user_id) + (" **Muted** "
         if to_mute
-        else " **Unmuted** " + "succesfully",
+        else " **Unmuted** ") + "succesfully",
         del_in=5,
     )
 
