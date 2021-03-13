@@ -7,9 +7,9 @@ from pyrogram.raw.functions.messages import GetFullChat
 from pyrogram.raw.functions.phone import (
     CreateGroupCall,
     DiscardGroupCall,
-    InviteToGroupCall,
     EditGroupCallMember,
-    GetGroupCall
+    GetGroupCall,
+    InviteToGroupCall,
 )
 from pyrogram.raw.types import (
     InputGroupCall,
@@ -17,8 +17,10 @@ from pyrogram.raw.types import (
     InputPeerChat,
     InputPeerUser,
 )
-from ..tools.json import yamlify
+
 from userge import Message, userge
+
+from ..tools.json import yamlify
 
 
 @userge.on_cmd(
@@ -116,6 +118,7 @@ async def inv_vc_(message: Message):
     else:
         await message.edit("✅ Invited Successfully !", del_in=5)
 
+
 @userge.on_cmd(
     "vcinfo",
     about={
@@ -129,18 +132,21 @@ async def inv_vc_(message: Message):
 async def vcinfo_(message: Message):
     group_call = await get_group_call(message.chat.id)
     if not group_call:
-        await message.edit(
-            "**No Voice Chat Found** !", del_in=8
-        )
+        await message.edit("**No Voice Chat Found** !", del_in=8)
         return
-        
-        
+
     await message.edit_or_send_as_file(
-    text=yamlify(await userge.send(
-        GetGroupCall(
-            call=group_call,
-        )
-    )), filename="group_call.txt", caption="Too Large")
+        text=yamlify(
+            await userge.send(
+                GetGroupCall(
+                    call=group_call,
+                )
+            )
+        ),
+        filename="group_call.txt",
+        caption="Too Large",
+    )
+
 
 @userge.on_cmd(
     "unmutevc",
@@ -155,6 +161,7 @@ async def vcinfo_(message: Message):
 )
 async def unmute_vc_(message: Message):
     await manage_vcmember(message, to_mute=False)
+
 
 @userge.on_cmd(
     "mutevc",
@@ -171,13 +178,10 @@ async def mute_vc_(message: Message):
     await manage_vcmember(message, to_mute=True)
 
 
-
 async def manage_vcmember(message: Message, to_mute: bool):
     group_call = await get_group_call(message.chat.id)
     if not group_call:
-        await message.edit(
-            "**No Voice Chat Found** !", del_in=8
-        )
+        await message.edit("**No Voice Chat Found** !", del_in=8)
         return
     if message.input_str:
         peer_ = message.input_str.strip()
@@ -186,18 +190,20 @@ async def manage_vcmember(message: Message, to_mute: bool):
     else:
         return
     try:
-        user_ = await userge.resolve_peer(int(peer_ ) if peer_.isdigit() else peer_)
+        user_ = await userge.resolve_peer(int(peer_) if peer_.isdigit() else peer_)
     except PeerIdInvalid:
         return
-    
+
     await userge.send(
-        EditGroupCallMember(
-            call=group_call,
-            user_id=user_,
-            muted=to_mute
-        )
+        EditGroupCallMember(call=group_call, user_id=user_, muted=to_mute)
     )
-    await message.edit(str(user_.user_id) + " **Muted** " if to_mute else " **Unmuted** " + "succesfully", del_in=5)
+    await message.edit(
+        str(user_.user_id) + " **Muted** "
+        if to_mute
+        else " **Unmuted** " + "succesfully",
+        del_in=5,
+    )
+
 
 async def get_group_call(chat_id: Union[int, str]) -> Optional[InputGroupCall]:
     chat_peer = await userge.resolve_peer(chat_id)
@@ -239,7 +245,3 @@ async def append_peer_user(user_ids: List, limit: int = None) -> Optional[List]:
                 peer_list.append(peer_)
     if len(peer_list) != 0:
         return sample(peer_list, min(len(peer_list), limit)) if limit else peer_list
-
-
-
-
