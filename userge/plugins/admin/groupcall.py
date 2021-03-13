@@ -154,7 +154,7 @@ async def vcinfo_(message: Message):
     allow_via_bot=False,
 )
 async def unmute_vc_(message: Message):
-    await manage_vcmember(message: Message, to_mute=False)
+    await manage_vcmember(message, to_mute=False)
 
 @userge.on_cmd(
     "mutevc",
@@ -168,7 +168,7 @@ async def unmute_vc_(message: Message):
     allow_via_bot=False,
 )
 async def mute_vc_(message: Message):
-    await manage_vcmember(message: Message, to_mute=True)
+    await manage_vcmember(message, to_mute=True)
 
 
 
@@ -182,16 +182,22 @@ async def manage_vcmember(message: Message, to_mute: bool):
     if message.input_str:
         peer_ = message.input_str.strip()
     elif message.reply_to_message and message.reply_to_message.text:
-        peer_ = message.reply_to_message
+        peer_ = message.reply_to_message.text
     else:
         return
+    try:
+        user_ = await userge.resolve_peer(int(peer_ ) if peer_.isdigit() else peer_)
+    except PeerIdInvalid:
+        return
+    
     await userge.send(
         EditGroupCallMember(
             call=group_call,
-            user_id=(await userge.resolve_peer(int(peer_ ) if peer_.isdigit() else peer_)),
+            user_id=user_,
             muted=to_mute
         )
     )
+    await message.edit(str(user_.user_id) + " **Muted** " if to_mute else " **Unmuted** " + "succesfully", del_in=5)
 
 async def get_group_call(chat_id: Union[int, str]) -> Optional[InputGroupCall]:
     chat_peer = await userge.resolve_peer(chat_id)
