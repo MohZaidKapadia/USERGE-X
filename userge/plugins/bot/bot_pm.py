@@ -147,11 +147,13 @@ if userge.has_bot:
         start_msg = f"Hello Master **{from_user.flname}** !\n"
         btns = [
             [InlineKeyboardButton("➕  ADD TO GROUP", callback_data="add_to_grp")],
-            
         ]
         return start_msg, btns
 
-    @userge.bot.on_message(filters.private & filters.regex(pattern=f"(?i)^/start(@{_CACHED_INFO['bot'].uname})?([\s]+|$)"))
+    @userge.bot.on_message(
+        filters.private
+        & filters.regex(pattern=f"(?i)^/start(@{_CACHED_INFO['bot'].uname})?([\s]+|$)")
+    )
     async def start_bot(_, message: Message):
         c_info = await get_bot_info()
         bot_ = c_info.get("bot")
@@ -189,9 +191,8 @@ My Master is : {owner_.flname}</b>
             await CHANNEL.log(
                 f"**ERROR**: {str(bpm_e)}\n\nFatal Error occured while sending Bot Pm Media"
             )
-        if not from_user.id in Config.OWNER_ID:
+        if from_user.id not in Config.OWNER_ID:
             await check_new_bot_user(message.from_user)
-
 
     @userge.bot.on_callback_query(filters.regex(pattern=r"^add_to_grp$"))
     @check_owner
@@ -200,8 +201,10 @@ My Master is : {owner_.flname}</b>
         msg = "<b>🤖 Add Your Bot to Group</b> \n\n <u>Note:</u>  <i>Admin Privilege Required !</i>"
         add_bot = f"http://t.me/{(await get_bot_info())['bot'].uname}?startgroup=start"
         buttons = InlineKeyboardMarkup(
-            [[InlineKeyboardButton("➕ PRESS TO ADD", url=add_bot)],
-            [InlineKeyboardButton("BACK", callback_data="back_bot_pm")]]
+            [
+                [InlineKeyboardButton("➕ PRESS TO ADD", url=add_bot)],
+                [InlineKeyboardButton("BACK", callback_data="back_bot_pm")],
+            ]
         )
         await c_q.edit_message_text(msg, reply_markup=buttons)
 
@@ -209,12 +212,15 @@ My Master is : {owner_.flname}</b>
     @check_owner
     async def back_bot_pm_(c_q: CallbackQuery):
         await c_q.answer()
-        start_msg, btns = default_owner_start((await userge.bot.get_user_dict(c_q.from_user)))
+        start_msg, btns = default_owner_start(
+            (await userge.bot.get_user_dict(c_q.from_user))
+        )
         await c_q.edit_message_text(start_msg, reply_markup=InlineKeyboardMarkup(btns))
-    
-    
+
         ##############| USERGE-X Bot Antiflood |##############
+
     if Config.BOT_ANTIFLOOD:
+
         async def send_flood_alert(user_id: Union[int, User]) -> None:
             user_ = await userge.bot.get_user_dict(user_id, attr_dict=True)
             if user_.id in FloodConfig.BANNED_USERS:
@@ -223,13 +229,17 @@ My Master is : {owner_.flname}</b>
                 flood_count = FloodConfig.ALERT[user_.id]["count"]
                 if flood_count > 10:
                     if user_.id in Config.SUDO_USERS:
-                        sudo_spam = (f"**Sudo User** {user_.mention}:\n  ID: {user_.id}\n\n"
-                        "Is Flooding your bot !, Check `.help delsudo` to remove the user from Sudo.")
-                        await userge.bot.send_message(
-                            Config.LOG_CHANNEL_ID, sudo_spam
+                        sudo_spam = (
+                            f"**Sudo User** {user_.mention}:\n  ID: {user_.id}\n\n"
+                            "Is Flooding your bot !, Check `.help delsudo` to remove the user from Sudo."
                         )
+                        await userge.bot.send_message(Config.LOG_CHANNEL_ID, sudo_spam)
                         return
-                    await ban_from_bot_pm(user_.id, "Automated Ban for Flooding bot [10 times]", log=__name__)
+                    await ban_from_bot_pm(
+                        user_.id,
+                        "Automated Ban for Flooding bot [10 times]",
+                        log=__name__,
+                    )
                     return
                 else:
                     FloodConfig.ALERT[user_.id]["count"] = flood_count + 1
@@ -253,7 +263,8 @@ My Master is : {owner_.flname}</b>
                             "🚫  BAN", callback_data=f"bot_pm_ban_{user_.id}"
                         ),
                         InlineKeyboardButton(
-                            "➖ Bot Antiflood [OFF]", callback_data=f"toggle_bot-antiflood_off"
+                            "➖ Bot Antiflood [OFF]",
+                            callback_data=f"toggle_bot-antiflood_off",
                         ),
                     ]
                 ]
@@ -264,12 +275,17 @@ My Master is : {owner_.flname}</b>
                 )
             else:
                 fa_msg = await userge.bot.edit_message_text(
-                    Config.LOG_CHANNEL_ID, FloodConfig.ALERT[user_.id]["fa_id"], flood_msg, reply_markup=buttons
+                    Config.LOG_CHANNEL_ID,
+                    FloodConfig.ALERT[user_.id]["fa_id"],
+                    flood_msg,
+                    reply_markup=buttons,
                 )
             FloodConfig.ALERT[user_.id]["fa_id"] = fa_msg.message_id
             try:
                 await userge.bot.send_message(
-                    Config.OWNER_ID[0], f"⚠️  [**Flood Notification**]({fa_msg.link})", disable_web_page_preview=True
+                    Config.OWNER_ID[0],
+                    f"⚠️  [**Flood Notification**]({fa_msg.link})",
+                    disable_web_page_preview=True,
                 )
             except UserIsBlocked:
                 await CHANNEL.log("**Unblock your bot !**")
@@ -352,11 +368,12 @@ My Master is : {owner_.flname}</b>
         await asyncio.gather(
             c_q.answer(),
             SAVED_SETTINGS.update_one(
-                {"_id": "BOT_ANTIFLOOD"}, {"$set": {"data": Config.BOT_ANTIFLOOD}}, upsert=True
+                {"_id": "BOT_ANTIFLOOD"},
+                {"$set": {"data": Config.BOT_ANTIFLOOD}},
+                upsert=True,
             ),
-            c_q.edit_message_text("BOT_ANTIFLOOD is now disabled !")
+            c_q.edit_message_text("BOT_ANTIFLOOD is now disabled !"),
         )
-
 
 
 @userge.on_cmd(

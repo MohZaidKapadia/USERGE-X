@@ -24,6 +24,7 @@ from pyrogram.types import (
 from wget import download
 from youtube_dl.utils import DownloadError, ExtractorError, GeoRestrictedError
 from youtubesearchpython import VideosSearch
+
 from userge import Config, Message, pool, userge
 from userge.utils import (
     check_owner,
@@ -204,7 +205,9 @@ if userge.has_bot:
             await upload_msg.err("nothing found !")
             return
         if not thumb_pic and downtype == "v":
-            thumb_pic = str(await pool.run_in_thread(download)(await get_ytthumb(yt_code)))
+            thumb_pic = str(
+                await pool.run_in_thread(download)(await get_ytthumb(yt_code))
+            )
         uploaded_media = await upload(
             upload_msg,
             path=Path(_fpath),
@@ -372,7 +375,9 @@ def _tubeDl(url: str, starttime, uid: str):
     except DownloadError as e:
         LOGGER.error(e)
     except GeoRestrictedError:
-        LOGGER.error("ERROR: The uploader has not made this video available in your country")
+        LOGGER.error(
+            "ERROR: The uploader has not made this video available in your country"
+        )
     else:
         return x
 
