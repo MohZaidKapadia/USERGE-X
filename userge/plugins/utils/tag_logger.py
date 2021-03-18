@@ -75,7 +75,7 @@ async def grp_log(_, message: Message):
                     Config.LOG_CHANNEL_ID,
                     log,
                     parse_mode="html",
-                    disable_web_page_preview=True,
+                    disable_web_page_preview=False,
                 )
             except FloodWait as e:
                 await asyncio.sleep(e.x + 3)
@@ -87,7 +87,7 @@ async def grp_log(_, message: Message):
                 Config.LOG_CHANNEL_ID,
                 log,
                 parse_mode="html",
-                disable_web_page_preview=True,
+                disable_web_page_preview=False,
             )
         except FloodWait as e:
             await asyncio.sleep(e.x + 3)
