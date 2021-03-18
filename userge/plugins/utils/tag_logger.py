@@ -1,4 +1,4 @@
-# Created for USERGE-X by @Kakashi_HTK/@ashwinstr
+# created for USERGE-X by @Kakashi_HTK/@ashwinstr
 
 import asyncio
 
@@ -33,11 +33,6 @@ tagLoggingFilter = filters.create(lambda _, __, ___: Config.TAG_LOGGING)
 )
 async def all_log(message: Message):
     """ enable / disable [all Logger] """
-    if not Config.PM_LOG_GROUP_ID:
-        return await message.edit(
-            "Make a group and provide it's ID in `PM_LOG_GROUP_ID` var.",
-            del_in=5,
-        )
     flag = message.flags
     if "-c" in flag:
         if Config.TAG_LOGGING:
@@ -61,10 +56,8 @@ async def all_log(message: Message):
     filters.group & ~filters.bot & ~filters.me & tagLoggingFilter,
 )
 async def grp_log(_, message: Message):
-    if not Config.PM_LOG_GROUP_ID:
-        return
     me = await userge.get_me()
-    id = message.message_id
+    message.message_id
     reply = message.reply_to_message
     log = f"""
 #TAGS
@@ -79,14 +72,10 @@ async def grp_log(_, message: Message):
             try:
                 await asyncio.sleep(0.5)
                 await userge.send_message(
-                    Config.PM_LOG_GROUP_ID,
+                    Config.LOG_CHANNEL_ID,
                     log,
                     parse_mode="html",
-                    disable_web_page_preview=False,
-                )
-                await asyncio.sleep(0.5)
-                await userge.forward_messages(
-                    Config.PM_LOG_GROUP_ID, message.chat.id, message_ids=id
+                    disable_web_page_preview=True,
                 )
             except FloodWait as e:
                 await asyncio.sleep(e.x + 3)
@@ -95,84 +84,10 @@ async def grp_log(_, message: Message):
         try:
             await asyncio.sleep(0.5)
             await userge.send_message(
-                Config.PM_LOG_GROUP_ID,
+                Config.LOG_CHANNEL_ID,
                 log,
                 parse_mode="html",
-                disable_web_page_preview=False,
-            )
-            await asyncio.sleep(0.5)
-            await userge.forward_messages(
-                Config.PM_LOG_GROUP_ID, message.chat.id, message_ids=id
+                disable_web_page_preview=True,
             )
         except FloodWait as e:
             await asyncio.sleep(e.x + 3)
-
-
-@userge.on_message(
-    filters.private & ~filters.bot & ~filters.edited & tagLoggingFilter, group=5
-)
-async def pm_log(_, message: Message):
-    me = await userge.get_me()
-    sender_id = message.from_user.id
-    if not Config.PM_LOG_GROUP_ID:
-        return
-    chat_id = message.chat.id
-    chat = await userge.get_chat(chat_id)
-    if chat.type == "bot":
-        return
-    chat_name = " ".join([chat.first_name, chat.last_name or ""])
-    id = message.message_id
-    log1 = f"""
-👤 <a href="tg://user?id={chat_id}">{chat_name}</a> sent a new message.
-#⃣ <b>ID : </b><code>{chat_id}</code>
-✉ <b>Message :</b> ⬇
-"""
-    log2 = f"""
-🗣 <b>#Conversation</b> with:
-👤 <a href="tg://user?id={chat_id}">{chat_name}</a>
-#⃣ <b>ID : </b><code>{chat_id}</code>
-"""
-    log3 = f"""
-🗣 <b>#Conversation</b> with:
-👤 <a href="tg://user?id={chat_id}">{chat_name}</a> ⬇
-"""
-    try:
-        if sender_id == me.id:
-            await asyncio.sleep(0.5)
-            await userge.send_message(
-                Config.PM_LOG_GROUP_ID,
-                log3,
-                parse_mode="html",
-                disable_web_page_preview=False,
-            )
-        await asyncio.sleep(0.5)
-        await userge.forward_messages(
-            Config.PM_LOG_GROUP_ID, chat_id, id, disable_notification=True
-        )
-    except FloodWait as e:
-        await asyncio.sleep(e.x + 3)
-
-
-"""   try:
-        await asyncio.sleep(0.5)
-        if sender_id != me.id:
-            await userge.send_message(
-                Config.PM_LOG_GROUP_ID,
-                log1,
-                parse_mode="html",
-                disable_web_page_preview=False,
-            )
-        else:
-            await userge.send_message(
-                Config.PM_LOG_GROUP_ID,
-                log2,
-                parse_mode="html",
-                disable_web_page_preview=False,
-            )
-        await asyncio.sleep(0.5)
-        await userge.forward_messages(
-            Config.PM_LOG_GROUP_ID, chat_id, id, disable_notification=True
-        )
-    except FloodWait as e:
-        await asyncio.sleep(e.x + 3)
-"""

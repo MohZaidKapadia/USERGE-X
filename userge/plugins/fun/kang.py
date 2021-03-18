@@ -215,7 +215,9 @@ async def kang_(message: Message):
                 if "-s" in message.flags
                 else f"[Here](t.me/addstickers/{packname})"
             )
-            await message.edit(f"**Aka sticker leliya hai jaldi chalo yaha se.\nHame sticker yaha milega 👉** {out}**!**")
+            await message.edit(
+                f"**Aka sticker leliya hai jaldi chalo yaha se.\nHame sticker yaha milega 👉** {out}**!**"
+            )
         if os.path.exists(str(photo)):
             os.remove(photo)
 
