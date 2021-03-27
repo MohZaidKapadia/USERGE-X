@@ -281,7 +281,7 @@ KANGING_STR = (
     "Udhar Dekho Sir... Mujhe apka sticker churane dijiye 😁😁",
     "Dekho pikachu hai vaha..",
     "Please gussa mat hoiye sticker chori kar raha hu",
-    "Aree upar dekho!!! UFO ",
+    "Aree upar dekho!!! UFO",
     "Ye Sticker Tu muje dede😠",
     "Dekho jo tumhara hai wo mera bhi hai aur jo  mera hai wo mera hi hai 😌😌",
     "Doraemon mujhe koi gadget do jisse ye sticker mera hojaye",
