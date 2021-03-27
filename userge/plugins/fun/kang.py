@@ -274,12 +274,12 @@ def resize_photo(photo: str) -> io.BytesIO:
 
 
 KANGING_STR = (
+    "Dekho pikachu hai vaha..",
     "Hey that's a nice sticker!\nMind if I kang?!..",
     "Roses are red violets are blue, kanging this sticker so my pack looks cool",
     "Imprisoning this sticker...",
     "Mr.Steal Your Sticker is stealing this sticker...",
     "Udhar Dekho Sir... Mujhe apka sticker churane dijiye 😁😁",
-    "Dekho pikachu hai vaha..",
     "Please gussa mat hoiye sticker chori kar raha hu",
     "Aree upar dekho!!! UFO",
     "Ye Sticker Tu muje dede😠",
