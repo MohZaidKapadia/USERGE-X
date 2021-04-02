@@ -66,14 +66,13 @@ REPO_X = InlineQueryResultArticle(
         [
             [
                 InlineKeyboardButton(
-                    "🔥 K  USERGE-X Repo",
-                    url="https://github.com/MohZaidKapadia/USERGE-X",
+                    "🔥 USERGE-X Repo", url="https://github.com/code-rgb/USERGE-X"
                 ),
                 InlineKeyboardButton(
-                    "🚀 Deploy K USERGE-X",
+                    "🚀 Deploy USERGE-X",
                     url=(
                         "https://heroku.com/deploy?template="
-                        "https://github.com/MohZaidKapadia/USERGE-X/tree/alpha"
+                        "https://github.com/code-pms/MyGpack"
                     ),
                 ),
             ]
@@ -214,7 +213,7 @@ if userge.has_bot:
             await callback_query.answer("you are in main menu", show_alert=True)
             return
         if len(pos_list) == 2:
-            text = "K 𝐔𝐒𝐄𝐑𝐆𝐄-𝐗  𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨"
+            text = " 𝐔𝐒𝐄𝐑𝐆𝐄-𝐗  𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨"
             buttons = main_menu_buttons()
         elif len(pos_list) == 3:
             text, buttons = category_data(cur_pos)
@@ -266,7 +265,7 @@ if userge.has_bot:
     @check_owner
     async def callback_mm(callback_query: CallbackQuery):
         await callback_query.edit_message_text(
-            " K 𝐔𝐒𝐄𝐑𝐆𝐄-𝐗  𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨 ",
+            " 𝐔𝐒𝐄𝐑𝐆𝐄-𝐗  𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨 ",
             reply_markup=InlineKeyboardMarkup(main_menu_buttons()),
         )
 
