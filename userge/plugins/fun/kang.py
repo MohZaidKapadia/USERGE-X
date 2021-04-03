@@ -157,12 +157,12 @@ async def kang_(message: Message):
                             await message.delete()
                         else:
                             out = (
-                                "__Here__"
+                                "_Yaha__"
                                 if "-s" in message.flags
-                                else f"[Here](t.me/addstickers/{packname})"
+                                else f"[Yaha](t.me/addstickers/{packname})"
                             )
                             await message.edit(
-                                f"**Sticker is** {out} __in a Different Pack__**!**"
+                                f"**Aka sticker leliya hai🤓.Hame sticker yaha milega👉** {out} _Dusri jaga rakha hai sticker pehli jaga full hogay thi aka😅__**!**"
                             )
                         return
                 await conv.send_document(photo)
@@ -211,11 +211,11 @@ async def kang_(message: Message):
             await message.delete()
         else:
             out = (
-                "__Here__"
+                "__Yaha__"
                 if "-s" in message.flags
-                else f"[Here](t.me/addstickers/{packname})"
+                else f"[Yaha](t.me/addstickers/{packname})"
             )
-            await message.edit(f"**Sticker is** {out}**!**")
+            await message.edit(f"**Aka sticker leliya hai🤓.Hame sticker yaha milega👉** {out}**!**")
         if os.path.exists(str(photo)):
             os.remove(photo)
 
